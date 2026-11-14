@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>VFR Radio English — Польша</title>
+<style>
+:root{
+  --bg:#0b1220;--card:#121b2e;--card2:#182440;--line:#243352;
+  --text:#e8eefc;--muted:#8da0c4;--accent:#4fb3ff;--accent2:#ffb84f;
+  --ok:#3ddc84;--bad:#ff6b6b;--atc:#1d2a4a;--pilot:#1a3a2e;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif}
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.app{max-width:640px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:12px 14px;position:sticky;top:0;background:rgba(11,18,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+header h1{font-size:17px;margin:0;flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:40px;height:40px;border-radius:12px;background:var(--card);display:grid;place-items:center;font-size:18px}
+main{padding:14px;flex:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.module{display:flex;gap:12px;align-items:center;width:100%;text-align:left}
+.module .num{width:42px;height:42px;border-radius:12px;background:var(--card2);display:grid;place-items:center;font-weight:700;color:var(--accent);flex:none}
+.module .t{flex:1;min-width:0}
+.module .t b{display:block;font-size:16px}
+.module .t span{color:var(--muted);font-size:13.5px}
+.bar{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--ok);width:0}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.tag{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12.5px;color:var(--muted);margin:2px 4px 2px 0}
+.ctx{background:linear-gradient(180deg,var(--card2),var(--card));border-left:3px solid var(--accent2)}
+.ctx h3{margin:0 0 6px;font-size:14px;color:var(--accent2);text-transform:uppercase;letter-spacing:.04em}
+.bubble{border-radius:var(--r);padding:12px 14px;margin:10px 0;position:relative}
+.bubble.atc{background:var(--atc);border:1px solid #2b3d6b}
+.bubble.pilot{background:var(--pilot);border:1px solid #2a5a45}
+.bubble .who{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.bubble .txt{font-size:17px;line-height:1.5;font-weight:500}
+.bubble .txt.hidden{filter:blur(7px);user-select:none}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:8px}
+.btn.primary{background:var(--accent);color:#06101f;border-color:transparent}
+.btn.ok{background:var(--ok);color:#06101f;border-color:transparent}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45}
+.btn.big{width:100%;justify-content:center;padding:14px}
+textarea{width:100%;min-height:84px;background:#0e1628;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;font-size:16px;resize:vertical}
+.keys{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.key{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;text-align:left;width:100%}
+.key .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--muted);display:grid;place-items:center;flex:none;font-size:14px}
+.key.hit .box{background:var(--ok);border-color:var(--ok);color:#06101f}
+.key.miss .box{background:var(--bad);border-color:var(--bad);color:#fff}
+.key .k{flex:1}
+.key .ex{color:var(--muted);font-size:13px}
+.score{font-size:28px;font-weight:800}
+.note{border-left:3px solid var(--accent);padding-left:12px;margin:10px 0;color:#c9d6f0;font-size:15px}
+.note b{color:var(--text)}
+details{margin-top:8px}
+summary{cursor:pointer;color:var(--accent);font-weight:600;padding:6px 0}
+.steps{display:flex;gap:4px;margin:4px 0 12px}
+.steps i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.steps i.done{background:var(--ok)}
+.steps i.cur{background:var(--accent)}
+.foot{display:flex;gap:8px;margin-top:14px}
+.foot .btn{flex:1;justify-content:center}
+.warn{background:#2a2410;border:1px solid #5a4a14;color:#ffe08a;border-radius:12px;padding:10px 12px;font-size:14px}
+.ref h4{margin:14px 0 6px;color:var(--accent)}
+.ref .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+.ref .grid div{background:var(--card2);border-radius:8px;padding:6px 8px;font-size:14px}
+.ref .grid div b{color:var(--accent2)}
+.ref ul{padding-left:18px;margin:6px 0}
+.ref li{margin:4px 0}
+.set label{display:block;margin:12px 0 4px;color:var(--muted);font-size:14px}
+.set input[type=text],.set select{width:100%;background:#0e1628;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px}
+.set input[type=range]{width:100%}
+.pulse{animation:p 1s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.4}}
+.hl{background:rgba(79,179,255,.18);border-radius:4px;padding:0 3px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#223;border:1px solid var(--line);padding:10px 14px;border-radius:12px;font-size:14px;z-index:9;max-width:90vw}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <button class="iconbtn" id="back" aria-label="Назад">‹</button>
+  <h1 id="title">VFR Radio English</h1>
+  <button class="iconbtn" id="refbtn" title="Шпаргалка">📖</button>
+  <button class="iconbtn" id="setbtn" title="Настройки">⚙︎</button>
+</header>
+<main id="main"></main>
+</div>
+
+<script>
+/* ===================== ДАННЫЕ ===================== */
+const PH = {A:'Alfa',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',I:'India',J:'Juliett',K:'Kilo',L:'Lima',M:'Mike',N:'November',O:'Oscar',P:'Papa',Q:'Quebec',R:'Romeo',S:'Sierra',T:'Tango',U:'Uniform',V:'Victor',W:'Whiskey',X:'X-ray',Y:'Yankee',Z:'Zulu'};
+const DIG = ['zero','one','two','three','four','five','six','seven','eight','niner'];
+
+const MODULES = [
+{
+ id:'basics', title:'Основы эфира', sub:'Позывной, цифры, стандартные слова, radio check',
+ intro:'Короткие упражнения на механику: как звучит позывной, как читаются числа и частоты, какие слова имеют строго определённое значение. Без этого остальное не работает.',
+ steps:[
+  {ctx:'Стоянка GA на EPGD. Перед первым вызовом хочешь убедиться, что радио и частота в порядке. Частота Gdańsk Ground — 131.330.',
+   who:'pilot', pilot:'Gdańsk Ground, {CS}, radio check 131.330.',
+   atc2:'{CS}, Gdańsk Ground, readability 5.',
+   keys:[['Позывной станции первым','gdansk ground|gdańsk ground'],['Свой позывной','CS'],['Слова radio check','radio check'],['Частота по цифрам','131.330']],
+   note:'<b>Порядок:</b> кого вызываешь → кто ты → что хочешь. Шкала читаемости 1–5 (SERA.14055 / Doc 9432). «Loud and clear» в эфире встречается, но стандарт — число.',
+   tips:['Частоту читать по одной цифре: one three one decimal three three zero.','Не говорить «how do you read» — достаточно «radio check».']},
+  {ctx:'Диспетчер даёт короткое указание. Нужен правильный ответ одним словом.',
+   who:'atc', atc:'{CS}, report GOLF.',
+   pilot:'Wilco, {CS}.',
+   keys:[['WILCO (не ROGER)','wilco'],['Позывной','CS']],
+   note:'<b>WILCO</b> = понял и выполню. <b>ROGER</b> = только «принял» — для указаний, требующих действия, он не подходит. <b>AFFIRM</b>/<b>NEGATIVE</b> — ответы на вопрос. Указание «report …» не требует полного readback.',
+   tips:['«Roger, wilco» — лишнее. Достаточно wilco.','Не отвечать «OK» или «copied».']},
+  {ctx:'Диспетчер передал несколько элементов быстро, одного ты не разобрал (squawk). Попроси повторить только его.',
+   who:'atc', atc:'{CS}, squawk 2341, QNH 1018, runway 29.',
+   pilot:'Say again squawk, {CS}.',
+   atc2:'{CS}, squawk 2341.',
+   keys:[['SAY AGAIN','say again'],['Уточнение, что именно','squawk'],['Позывной','CS']],
+   note:'«Say again» + элемент: <i>say again squawk / say again QNH / say again all after runway</i>. «Please repeat» — не стандарт. Переспросить всегда дешевле, чем повторить неверно.',
+   tips:['Не додумывать — если не уверен, переспроси.']},
+  {ctx:'Тренировка чисел: QNH и частота.',
+   who:'atc', atc:'{CS}, QNH 1004, contact Gdańsk Approach 127.280.',
+   pilot:'QNH 1004, Gdańsk Approach 127.280, {CS}.',
+   keys:[['QNH 1004','1004'],['Частота 127.280','127.280'],['Позывной в конце','CS']],
+   note:'QNH и назначенная частота — обязательный readback (SERA.14035). Числа читаются по цифрам: one zero zero four; one two seven decimal two eight zero. «Niner» вместо nine, «tousand» для тысяч.',
+   tips:['Не говорить «one thousand four» для QNH.','Название станции при смене частоты повторить — это защита от ошибки.']},
+  {ctx:'Указание по высоте.',
+   who:'atc', atc:'{CS}, descend to altitude 1500 feet, QNH 1018.',
+   pilot:'Descending to altitude 1500 feet, QNH 1018, {CS}.',
+   keys:[['Высота 1500 feet','1500'],['QNH 1018','1018'],['Позывной','CS']],
+   note:'Высоты читаются «one tousand five hundred», не по цифрам. Указания по уровню — обязательный readback. Отвечать в форме действия: <i>descending / climbing / maintaining</i>.',
+   tips:['«Descend» в ответе — ошибка: нужно «descending».']},
+  {ctx:'Диспетчер просит подтвердить.',
+   who:'atc', atc:'{CS}, confirm squawk 2341.',
+   pilot:'Affirm, squawk 2341, {CS}.',
+   keys:[['AFFIRM','affirm'],['Код 2341','2341'],['Позывной','CS']],
+   note:'<b>Affirm</b> (не «affirmative», не «yes»). На «confirm …» отвечаем affirm/negative плюс значение.',
+   tips:[]}
+ ]
+},
+{
+ id:'base', title:'Базовый полёт: EPGD → EPEL', sub:'Стоянка → руление → вылет → маршрут → FIS → прибытие на неконтролируемый аэродром',
+ intro:'Полёт на Cessna 172 из Гданьска (контролируемый аэродром, CTR класса D) в Эльблонг (неконтролируемый, Elbląg Radio). Выход из CTR через точку GOLF (мол в устье Вислы Śmiałej), далее с FIS Gdańsk Information. Частоты и точки — из AIP Польши, но перед реальным полётом сверяй по действующему AIP/NOTAM.',
+ steps:[
+  {ctx:'Стоянка GA. Прослушай ATIS (129.630) и выпиши: буква информации, ВПП в работе, QNH. Потом «отчитайся» самому себе — это тренировка извлечения главного.',
+   who:'atc', atc:'Gdańsk information Charlie, time 0820. Runway in use 29. Wind 280 degrees 8 knots. Visibility 10 kilometres or more. Clouds few 3500 feet. Temperature 12, dew point 7. QNH 1018. VFR departures contact Gdańsk Delivery 131.325. On initial contact advise you have information Charlie.',
+   pilot:'Information Charlie, runway 29, QNH 1018.',
+   keys:[['Буква информации','charlie'],['ВПП 29','29'],['QNH 1018','1018']],
+   note:'ATIS слушаем до первого вызова. Из него нужны: буква, ВПП, QNH, ветер, кого вызывать первым. При первом контакте говорим «information Charlie» и QNH — это сигнал диспетчеру, что брифинг у тебя есть.',
+   tips:['Если на одной радиостанции — слушай ATIS до запуска или с handheld.']},
+  {ctx:'Первый вызов Gdańsk Delivery 131.325. Ты на стоянке GA, информация Charlie, QNH 1018, VFR в Эльблонг.',
+   who:'pilot', pilot:'Gdańsk Delivery, {CS}, Cessna 172, general aviation apron, information Charlie, QNH 1018, VFR to Elbląg, request departure clearance.',
+   atc2:'{CS}, Gdańsk Delivery, cleared to leave CTR via GOLF, not above 1500 feet, squawk 2341, runway 29.',
+   keys:[['Станция, затем позывной','gdansk delivery|gdańsk delivery'],['Позывной','CS'],['Тип ВС','cessna 172|cessna'],['Где стоишь','apron|general aviation'],['Информация Charlie + QNH','charlie'],['QNH 1018','1018'],['Куда и что просишь','elbląg|elblag'],['Request …','request']],
+   note:'Структура первого вызова: <b>кто ты → где ты → что знаешь (ATIS, QNH) → что хочешь</b>. На EPGD VFR-вылеты получают разрешение на выход из CTR заранее — через Delivery.',
+   tips:['Не начинать с «hello/good morning … with you» — лишние слова.','Тип ВС важен: диспетчер планирует по нему.']},
+  {ctx:'Delivery выдал разрешение на выход из CTR. Повтори обязательные элементы.',
+   who:'atc', atc:'{CS}, Gdańsk Delivery, cleared to leave CTR via GOLF, not above 1500 feet, squawk 2341, runway 29.',
+   pilot:'Cleared to leave CTR via GOLF, not above 1500 feet, squawk 2341, runway 29, {CS}.',
+   atc2:'{CS}, readback correct, contact Gdańsk Ground 131.330 for taxi.',
+   keys:[['Маршрут: via GOLF','golf'],['Ограничение: not above 1500 feet','1500'],['Squawk 2341','2341'],['ВПП 29','29'],['Позывной в конце','CS']],
+   note:'<b>SERA.14035:</b> обязательно повторяются маршрутное разрешение, ограничения по высоте, код SSR, ВПП, QNH, частота. Порядок — как у диспетчера. Позывной — в конце readback.',
+   tips:['«Not above 1500» ≠ «at 1500». Повторяй именно формулировку.']},
+  {ctx:'Переходи на Gdańsk Ground 131.330 и запроси руление.',
+   who:'pilot', pilot:'Gdańsk Ground, {CS}, general aviation apron, request taxi.',
+   atc2:'{CS}, Gdańsk Ground, taxi to holding point Alfa 4 runway 29 via Bravo and Alfa, QNH 1018.',
+   keys:[['Станция','gdansk ground|gdańsk ground'],['Позывной','CS'],['Где ты','apron'],['Request taxi','request taxi|taxi']],
+   note:'Ground уже знает твоё разрешение от Delivery — повторять его не надо. Короткий вызов: где стоишь и что хочешь.',
+   tips:['Если нужен запуск с разрешения — «request start-up and taxi».']},
+  {ctx:'Readback указания на руление.',
+   who:'atc', atc:'{CS}, Gdańsk Ground, taxi to holding point Alfa 4 runway 29 via Bravo and Alfa, QNH 1018.',
+   pilot:'Taxi to holding point Alfa 4 runway 29 via Bravo and Alfa, QNH 1018, {CS}.',
+   atc2:'{CS}, correct. When ready, contact Gdańsk Tower 118.105.',
+   keys:[['Предел руления: holding point Alfa 4','alfa 4|alpha 4|a4'],['ВПП 29','29'],['Маршрут: via Bravo and Alfa','bravo'],['QNH 1018','1018'],['Позывной','CS']],
+   note:'Руление по любой ВПП и указания «taxi/hold short/cross» — обязательный readback. Предел руления (holding point) — главное: дальше без отдельного разрешения нельзя. Записывай маршрут руления до того, как повторишь.',
+   tips:['Готовься, что названия РД на незнакомом аэродроме не запомнятся — пиши.']},
+  {ctx:'Ты у предварительного Alfa 4. Переходи на Tower 118.105 и доложи готовность.',
+   who:'pilot', pilot:'Gdańsk Tower, {CS}, holding point Alfa 4, ready for departure.',
+   atc2:'{CS}, Gdańsk Tower, behind landing Boeing 737, line up runway 29 and wait, behind.',
+   keys:[['Станция','gdansk tower|gdańsk tower'],['Позывной','CS'],['Место: holding point Alfa 4','alfa 4|alpha 4|a4'],['Ready for departure (не take-off)','ready for departure|ready']],
+   note:'Слово <b>take-off</b> пилот и диспетчер используют только в самом разрешении на взлёт и его отмене. До этого — <i>departure</i>. Это защита от повторения Тенерифе.',
+   tips:['«Ready for take-off» — классическая ошибка.']},
+  {ctx:'Условное разрешение занять ВПП за садящимся Boeing 737.',
+   who:'atc', atc:'{CS}, behind landing Boeing 737, line up runway 29 and wait, behind.',
+   pilot:'Behind landing Boeing 737, lining up runway 29 and wait, behind, {CS}.',
+   atc2:'{CS}, wind 280 degrees 8 knots, runway 29, cleared for take-off.',
+   keys:[['Условие: behind landing Boeing 737','behind'],['Тип ВС в условии','737|boeing'],['Line up / lining up','line up|lining up'],['ВПП 29','29'],['Повтор «behind» в конце','behind[^]*behind'],['Позывной','CS']],
+   note:'Условное разрешение (ICAO Doc 4444 §12.2.7, SERA.8015): <b>условие → указание → повтор условия</b>. Повторяется целиком, с условием. Занимать ВПП можно только после того, как ты увидел этот 737 и он прошёл.',
+   tips:['Если 737 не видишь — «negative contact» и не выезжать.']},
+  {ctx:'Разрешение на взлёт.',
+   who:'atc', atc:'{CS}, wind 280 degrees 8 knots, runway 29, cleared for take-off.',
+   pilot:'Runway 29, cleared for take-off, {CS}.',
+   keys:[['ВПП 29','29'],['Cleared for take-off','cleared for take-off|cleared for takeoff|take-off|takeoff'],['Позывной','CS']],
+   note:'Ветер не повторяется. ВПП и «cleared for take-off» — обязательно. Это единственное место, где звучит «take-off».',
+   tips:['Не добавлять «rolling» — это не стандарт SERA.']},
+  {ctx:'После отрыва Tower даёт указание.',
+   who:'atc', atc:'{CS}, after departure turn left heading 120, not above 1500 feet, report GOLF.',
+   pilot:'Left heading 120, not above 1500 feet, wilco, {CS}.',
+   keys:[['Курс: left heading 120','120'],['Not above 1500 feet','1500'],['Wilco на report GOLF','wilco|report golf'],['Позывной','CS']],
+   note:'Курс и уровень — обязательный readback. Указание доложить точку — достаточно «wilco».',
+   tips:[]},
+  {ctx:'Ты над GOLF на 1500 ft. Доложи выход из CTR.',
+   who:'pilot', pilot:'Gdańsk Tower, {CS}, GOLF, 1500 feet, leaving CTR.',
+   atc2:'{CS}, roger, leaving CTR approved, squawk 7000, contact Gdańsk Information 127.150.',
+   keys:[['Станция','gdansk tower|gdańsk tower'],['Позывной','CS'],['Точка GOLF','golf'],['Высота 1500','1500'],['Leaving CTR','leaving']],
+   note:'Доклад позиции: <b>позывной → точка → высота → намерение</b>. После выхода из CTR диспетчер передаёт тебя FIS.',
+   tips:[]},
+  {ctx:'Readback: код и частота FIS.',
+   who:'atc', atc:'{CS}, roger, leaving CTR approved, squawk 7000, contact Gdańsk Information 127.150.',
+   pilot:'Squawk 7000, Gdańsk Information 127.150, {CS}.',
+   keys:[['Squawk 7000','7000'],['Станция Gdańsk Information','information'],['Частота 127.150','127.150'],['Позывной','CS']],
+   note:'7000 — код VFR conspicuity в Европе. Назначенная частота повторяется с названием станции.',
+   tips:['«Goodbye» в конце необязателен, но допустим.']},
+  {ctx:'Первый вызов FIS. Gdańsk Information 127.150 (сектор «восток»). Ты над GOLF, 1500 ft, QNH 1018, следуешь в Эльблонг.',
+   who:'pilot', pilot:'Gdańsk Information, {CS}, Cessna 172, from Gdańsk to Elbląg, over GOLF, 1500 feet, QNH 1018, request flight information service.',
+   atc2:'{CS}, Gdańsk Information, roger, QNH 1018, no reported traffic, report before changing frequency.',
+   keys:[['Станция','information'],['Позывной','CS'],['Тип','cessna'],['Откуда/куда','elbląg|elblag'],['Позиция GOLF','golf'],['Высота 1500','1500'],['QNH','1018']],
+   note:'FIS — <b>не контроль</b>: информатор не даёт разрешений и не отвечает за эшелонирование. Он даёт информацию о движении, погоде, зонах. Полный доклад при первом вызове помогает ему тебя «видеть» в картине.',
+   tips:['В Польше FIS часто просит squawk — выполняй.','Сектора FIS Gdańsk: восток 127.150, запад 125.275 (сверяй по AIP).']},
+  {ctx:'FIS передаёт информацию о движении.',
+   who:'atc', atc:'{CS}, traffic, glider, 11 o\'clock, 3 miles, crossing left to right, 2000 feet.',
+   pilot:'Looking out, {CS}.',
+   atc2:'{CS}, roger.',
+   keys:[['Looking out / traffic in sight / negative contact','looking out|traffic in sight|negative contact'],['Позывной','CS']],
+   note:'Три стандартных ответа на traffic information: <b>looking out</b> (ищу), <b>traffic in sight</b> (вижу), <b>negative contact</b> (не вижу). Направление «11 o\'clock» — относительно носа.',
+   tips:['«Roger» на traffic — слабо: диспетчер не понимает, видишь ли ты борт.']},
+  {ctx:'10 миль западнее Эльблонга. Пора уходить с FIS на Elbląg Radio 122.305. Доложи.',
+   who:'pilot', pilot:'Gdańsk Information, {CS}, 10 miles west of Elbląg, 1500 feet, changing to Elbląg Radio 122.305.',
+   atc2:'{CS}, roger, frequency change approved, goodbye.',
+   keys:[['Станция','information'],['Позывной','CS'],['Позиция','elbląg|elblag'],['Высота','1500'],['Куда уходишь + частота','122.305|radio']],
+   note:'С FIS не «уходят молча»: доклад о смене частоты закрывает твой трек у информатора.',
+   tips:[]},
+  {ctx:'Elbląg Radio 122.305 — неконтролируемый аэродром (станция «Radio» даёт информацию, не разрешения). Первый вызов.',
+   who:'pilot', pilot:'Elbląg Radio, {CS}, Cessna 172, from Gdańsk, 10 miles west, 1500 feet, for landing, request aerodrome information.',
+   atc2:'{CS}, Elbląg Radio, runway 28 in use, wind 290 degrees 6 knots, QNH 1017, left-hand circuit, one Cessna in the circuit, report downwind.',
+   keys:[['Станция Elbląg Radio','radio'],['Позывной','CS'],['Тип','cessna'],['Позиция','10 miles|west'],['Высота','1500'],['Намерение: for landing','landing'],['Request aerodrome information','information|request']],
+   note:'На аэродроме с Radio/AFIS ты сам отвечаешь за выбор ВПП и эшелонирование. Станция даёт: ВПП в работе, ветер, QNH, круг, движение. Вызов до входа в ATZ.',
+   tips:['Не говорить «request landing» на Radio — разрешений тут не бывает.']},
+  {ctx:'Повтори информацию аэродрома.',
+   who:'atc', atc:'{CS}, Elbląg Radio, runway 28 in use, wind 290 degrees 6 knots, QNH 1017, left-hand circuit, one Cessna in the circuit, report downwind.',
+   pilot:'Runway 28, QNH 1017, left-hand circuit, traffic copied, will report downwind, {CS}.',
+   keys:[['ВПП 28','28'],['QNH 1017','1017'],['Левый круг','left'],['Wilco / will report downwind','downwind|wilco'],['Позывной','CS']],
+   note:'Формально SERA требует readback ВПП и QNH и здесь. Информацию о движении подтверждаем коротко («traffic copied»).',
+   tips:[]},
+  {ctx:'Ты на downwind ВПП 28.',
+   who:'pilot', pilot:'Elbląg Radio, {CS}, downwind runway 28.',
+   atc2:'{CS}, roger, number two, follow the Cessna on base.',
+   keys:[['Станция','radio'],['Позывной','CS'],['Позиция в круге','downwind'],['ВПП 28','28']],
+   note:'Доклады в круге: downwind → (base) → final. «Number two» — ты второй, смотри за первым.',
+   tips:[]},
+  {ctx:'Прямая ВПП 28.',
+   who:'pilot', pilot:'Elbląg Radio, {CS}, final runway 28.',
+   atc2:'{CS}, runway 28, land at your discretion, wind 290 degrees 6 knots.',
+   keys:[['Станция','radio'],['Позывной','CS'],['Final','final'],['ВПП 28','28']],
+   note:'<b>«Land at your discretion»</b> — стандартная фраза AFIS/Radio: решение о посадке твоё. Readback не требуется, можно подтвердить позывным.',
+   tips:[]},
+  {ctx:'После посадки ВПП освобождена, рулишь на стоянку.',
+   who:'pilot', pilot:'Elbląg Radio, {CS}, runway vacated, taxiing to the apron.',
+   atc2:'{CS}, roger.',
+   keys:[['Станция','radio'],['Позывной','CS'],['Runway vacated','vacated'],['Намерение','apron|taxi']],
+   note:'Доклад об освобождении ВПП важен для тех, кто за тобой на прямой. На этом полёт в эфире закрыт.',
+   tips:[]}
+ ]
+},
+{
+ id:'complex', title:'Сложные указания и изменения', sub:'Hold position, amended clearance, длинные указания, коррекция readback, пересечение TMA',
+ intro:'Тот же вылет из EPGD, но диспетчер меняет план на ходу. Отрабатываем: записать длинное указание, переспросить часть, принять исправление, отказаться (unable).',
+ steps:[
+  {ctx:'Рулишь по Bravo. Ground останавливает тебя.',
+   who:'atc', atc:'{CS}, hold position, give way to the Dash 8 passing left to right on Bravo.',
+   pilot:'Holding position, giving way to the Dash 8, {CS}.',
+   atc2:'{CS}, continue taxi to holding point Alfa 4.',
+   keys:[['Holding position','holding'],['Giving way / Dash 8','dash|giving way'],['Позывной','CS']],
+   note:'<b>Hold position</b> — немедленная остановка. Ответ — в форме действия: holding. «Give way to» повторяем, чтобы диспетчер знал, что ты понял, кому уступаешь.',
+   tips:['«Roger» здесь недостаточно.']},
+  {ctx:'На предварительном Tower меняет разрешение.',
+   who:'atc', atc:'{CS}, amended clearance: leave CTR via MIKE then GOLF, not above 1000 feet due to arriving traffic, squawk 2341.',
+   pilot:'Amended clearance: leave CTR via MIKE then GOLF, not above 1000 feet, squawk 2341, {CS}.',
+   atc2:'{CS}, readback correct.',
+   keys:[['MIKE','mike'],['then GOLF','golf'],['Not above 1000 feet','1000'],['Squawk 2341','2341'],['Позывной','CS']],
+   note:'«Amended clearance» отменяет предыдущее. Повторяем всё новое разрешение, причину («due to traffic») — не нужно.',
+   tips:['Перепиши карточку разрешения, не правь в голове.']},
+  {ctx:'Длинное указание после взлёта. Конец ты не разобрал — переспроси только часть.',
+   who:'atc', atc:'{CS}, after departure turn right heading 040, climb to altitude 2500 feet, QNH 1018, after passing MIKE resume own navigation, report leaving CTR.',
+   pilot:'Say again all after MIKE, {CS}.',
+   atc2:'{CS}, after passing MIKE resume own navigation, report leaving CTR.',
+   keys:[['Say again','say again'],['Какую часть: all after MIKE','after|mike'],['Позывной','CS']],
+   note:'Варианты: <i>say again all before …</i>, <i>say again all after …</i>, <i>say again all between … and …</i>. Это быстрее, чем повтор всего сообщения.',
+   tips:[]},
+  {ctx:'Теперь полный readback того же указания.',
+   who:'atc', atc:'{CS}, after departure turn right heading 040, climb to altitude 2500 feet, QNH 1018, after passing MIKE resume own navigation, report leaving CTR.',
+   pilot:'Right heading 040, climbing to altitude 2500 feet, QNH 1018, after MIKE own navigation, wilco, {CS}.',
+   keys:[['Right heading 040','040'],['Высота 2500','2500'],['QNH 1018','1018'],['After MIKE own navigation','mike'],['Own navigation','own navigation'],['Позывной','CS']],
+   note:'Курс, высота, QNH — обязательны. «Resume own navigation» повторяем, чтобы было ясно, где кончаются векторы.',
+   tips:['Heading 040 читается «zero four zero».']},
+  {ctx:'Tower просит ускорить вылет, но ты ещё не закончил контрольную карту. Откажись корректно.',
+   who:'atc', atc:'{CS}, expedite departure, traffic 4 miles final.',
+   pilot:'Unable, {CS}.',
+   atc2:'{CS}, roger, hold position, expect departure after the landing traffic.',
+   keys:[['UNABLE','unable'],['Позывной','CS']],
+   note:'<b>Unable</b> — полноценный стандартный ответ. Безопасность важнее «удобства» диспетчера; он просто перестроит очередь. Если можешь — «expediting, {CS}».',
+   tips:['Не оправдываться длинно в эфире — unable достаточно.']},
+  {ctx:'Ты ошибся в readback кода. Диспетчер поправляет.',
+   who:'atc', atc:'{CS}, negative, squawk 2341, I say again, squawk 2341.',
+   pilot:'Squawk 2341, {CS}.',
+   atc2:'{CS}, correct.',
+   keys:[['Код 2341','2341'],['Позывной','CS']],
+   note:'На «negative … I say again …» — повторить правильное значение, без извинений и объяснений.',
+   tips:[]},
+  {ctx:'Возвращаешься в Гданьск с востока на 2500 ft и хочешь войти в TMA Gdańsk (класс C, нижняя граница 2000 ft) — нужен Gdańsk Approach 127.280. Информация Delta, QNH 1017.',
+   who:'pilot', pilot:'Gdańsk Approach, {CS}, Cessna 172, VFR from Elbląg to Gdańsk, 15 miles east of GOLF, 2500 feet, information Delta, request entering TMA.',
+   atc2:'{CS}, Gdańsk Approach, squawk 2345, enter TMA, maintain altitude 2500 feet, QNH 1017, report GOLF.',
+   keys:[['Станция','approach'],['Позывной','CS'],['Тип','cessna'],['Маршрут','elbląg|elblag'],['Позиция','15 miles|east'],['Высота 2500','2500'],['Delta','delta'],['Request entering TMA','tma|request']],
+   note:'В класс C без разрешения нельзя. Вызывай заранее — за 3–5 минут до границы; если разрешения нет, остаёшься снаружи или ниже.',
+   tips:[]},
+  {ctx:'Readback разрешения на вход в TMA.',
+   who:'atc', atc:'{CS}, Gdańsk Approach, squawk 2345, enter TMA, maintain altitude 2500 feet, QNH 1017, report GOLF.',
+   pilot:'Squawk 2345, entering TMA, maintaining 2500 feet, QNH 1017, wilco, {CS}.',
+   keys:[['Squawk 2345','2345'],['Enter TMA','tma'],['Maintain 2500','2500'],['QNH 1017','1017'],['Позывной','CS']],
+   note:'Разрешение на вход в контролируемое пространство — маршрутное разрешение, повторяется полностью.',
+   tips:[]}
+ ]
+},
+{
+ id:'weather', title:'Погода: возврат и вход в CTR', sub:'Решение о возврате, ожидание над точкой, вход в круг, посадка на контролируемом, Special VFR',
+ intro:'На маршруте нижняя кромка опускается. Ты решаешь вернуться в Гданьск. Отработка: доклад FIS, вход в CTR через GOLF, ожидание, круг, посадка, освобождение ВПП, запрос Special VFR.',
+ steps:[
+  {ctx:'Облачность снижается до ~1500 ft, видимость падает. Ты в 10 милях восточнее GOLF на 1300 ft. Доложи FIS решение вернуться.',
+   who:'pilot', pilot:'Gdańsk Information, {CS}, due to weather returning to Gdańsk, 10 miles east of GOLF, 1300 feet.',
+   atc2:'{CS}, roger, QNH 1017, contact Gdańsk Tower 118.105 before GOLF.',
+   keys:[['Станция','information'],['Позывной','CS'],['Причина: due to weather','weather'],['Решение: returning to Gdańsk','returning|gdansk|gdańsk'],['Позиция','golf|east'],['Высота','1300']],
+   note:'Решение о возврате — твоё, FIS только информируешь. Чем раньше объявишь, тем проще диспетчерам.',
+   tips:['Не ждать «разрешения» на возврат от FIS — его не будет.']},
+  {ctx:'Readback.',
+   who:'atc', atc:'{CS}, roger, QNH 1017, contact Gdańsk Tower 118.105 before GOLF.',
+   pilot:'QNH 1017, Gdańsk Tower 118.105, {CS}.',
+   keys:[['QNH 1017','1017'],['Частота 118.105','118.105'],['Позывной','CS']],
+   note:'',
+   tips:[]},
+  {ctx:'Вход в CTR EPGD в VFR — не выше 1500 ft AMSL, связь с Tower до точки. Ты в 5 милях восточнее GOLF, 1300 ft, ATIS Delta.',
+   who:'pilot', pilot:'Gdańsk Tower, {CS}, Cessna 172, 5 miles east of GOLF, 1300 feet, information Delta, request entering CTR via GOLF for landing.',
+   atc2:'{CS}, Gdańsk Tower, enter CTR via GOLF, not above 1500 feet, QNH 1017, hold over GOLF, expect 5 minutes delay due to traffic, squawk 2342.',
+   keys:[['Станция','tower'],['Позывной','CS'],['Тип','cessna'],['Позиция','east|golf'],['Высота','1300'],['Delta','delta'],['Request entering CTR via GOLF','ctr|entering'],['For landing','landing']],
+   note:'Вход в CTR класса D — только по разрешению. Вызов заранее: если тебя попросят подождать, у тебя должно быть место для ожидания снаружи.',
+   tips:[]},
+  {ctx:'Readback разрешения с ожиданием.',
+   who:'atc', atc:'{CS}, Gdańsk Tower, enter CTR via GOLF, not above 1500 feet, QNH 1017, hold over GOLF, expect 5 minutes delay due to traffic, squawk 2342.',
+   pilot:'Enter CTR via GOLF, not above 1500 feet, QNH 1017, holding over GOLF, squawk 2342, {CS}.',
+   atc2:'{CS}, correct.',
+   keys:[['Enter CTR via GOLF','golf'],['Not above 1500','1500'],['QNH 1017','1017'],['Hold over GOLF','hold'],['Squawk 2342','2342'],['Позывной','CS']],
+   note:'Ожидание над VFR-точкой — опубликованная процедура EPGD (над GOLF, NOVEMBER, SIERRA). Повторяем указание ждать, «expect 5 minutes» повторять не нужно.',
+   tips:[]},
+  {ctx:'Tower выпускает тебя из ожидания в круг.',
+   who:'atc', atc:'{CS}, leave GOLF, join right-hand downwind runway 29, report downwind.',
+   pilot:'Leaving GOLF, joining right-hand downwind runway 29, wilco, {CS}.',
+   keys:[['Leave GOLF','golf'],['Right-hand downwind','right'],['Downwind','downwind'],['ВПП 29','29'],['Позывной','CS']],
+   note:'Вход в круг — указание, которое повторяется (это и ВПП, и позиция). «Report downwind» — wilco.',
+   tips:[]},
+  {ctx:'Ты на прямой ВПП 29.',
+   who:'pilot', pilot:'Gdańsk Tower, {CS}, final runway 29.',
+   atc2:'{CS}, wind 300 degrees 10 knots, runway 29, cleared to land.',
+   keys:[['Станция','tower'],['Позывной','CS'],['Final','final'],['ВПП 29','29']],
+   note:'Если разрешения на посадку нет к короткой прямой — уход на второй круг, не ждать «авось дадут».',
+   tips:[]},
+  {ctx:'Readback разрешения на посадку.',
+   who:'atc', atc:'{CS}, wind 300 degrees 10 knots, runway 29, cleared to land.',
+   pilot:'Runway 29, cleared to land, {CS}.',
+   keys:[['ВПП 29','29'],['Cleared to land','cleared to land'],['Позывной','CS']],
+   note:'Ветер не повторяем. Если диспетчер говорит «continue approach» — это <b>не</b> разрешение на посадку.',
+   tips:[]},
+  {ctx:'После посадки.',
+   who:'atc', atc:'{CS}, vacate via Alfa 6, contact Gdańsk Ground 131.330.',
+   pilot:'Vacating via Alfa 6, Ground 131.330, {CS}.',
+   keys:[['Alfa 6','alfa 6|alpha 6|a6'],['Частота 131.330','131.330'],['Позывной','CS']],
+   note:'На ВПП не задерживаться с readback — коротко и рулить. Новая частота повторяется.',
+   tips:[]},
+  {ctx:'Вариант: у Гданьска видимость 4 км, ниже VMC для CTR. Запроси Special VFR.',
+   who:'pilot', pilot:'Gdańsk Tower, {CS}, request Special VFR clearance to enter CTR via GOLF for landing, visibility 4 kilometres.',
+   atc2:'{CS}, cleared to enter CTR Special VFR via GOLF, not above 1000 feet, QNH 1017, report GOLF.',
+   keys:[['Станция','tower'],['Позывной','CS'],['Special VFR','special vfr|special'],['Via GOLF','golf'],['Причина/видимость','visibility|4 kilometres|4 km']],
+   note:'Special VFR (SERA.5010) — разрешение войти в CTR при погоде ниже VMC, только днём, видимость ≥1500 м (для самолётов), вне облаков, в видимости земли. Инициатива — твоя.',
+   tips:['Special VFR — не способ лететь в плохой погоде, а способ законно вернуться на аэродром.']}
+ ]
+},
+{
+ id:'emerg', title:'Нештатные ситуации', sub:'PAN-PAN, MAYDAY, отказ радио, потеря ориентировки, нарушение зоны, уход на второй круг',
+ intro:'Главное в нештатной ситуации — короткая структура: <b>MAYDAY/PAN PAN ×3 → станция → позывной → характер → намерение → позиция → высота → люди на борту</b>. Отработай до автоматизма; в реальности думать будет некогда.',
+ steps:[
+  {ctx:'Двигатель работает неровно, тяга частично есть. 8 миль западнее Эльблонга, 1500 ft, курс 100, двое на борту. Срочность, не бедствие.',
+   who:'pilot', pilot:'PAN PAN, PAN PAN, PAN PAN, Gdańsk Information, {CS}, Cessna 172, engine running rough, 8 miles west of Elbląg, 1500 feet, heading 100, 2 persons on board, diverting to Elbląg, request priority.',
+   atc2:'{CS}, Gdańsk Information, roger PAN PAN, Elbląg Radio informed, wind at Elbląg 290 degrees 6 knots, report runway in sight.',
+   keys:[['PAN PAN ×3','pan pan'],['Станция','information'],['Позывной','CS'],['Характер: engine','engine'],['Позиция','west|elbląg|elblag|8 miles'],['Высота','1500'],['Persons on board','persons|pob'],['Намерение','diverting|elbląg|elblag']],
+   note:'<b>PAN PAN</b> — срочность (угроза безопасности, но не непосредственная опасность). <b>MAYDAY</b> — бедствие. Выбирай честно: занизить — потерять приоритет, завысить — не страшно.',
+   tips:['Говорить медленнее, чем хочется.','Если нет связи с FIS — 121.500.']},
+  {ctx:'Отказ двигателя. Вынужденная посадка на площадку. 5 миль южнее Эльблонга, 1200 ft, снижение, двое на борту.',
+   who:'pilot', pilot:'MAYDAY, MAYDAY, MAYDAY, Gdańsk Information, {CS}, Cessna 172, engine failure, forced landing, 5 miles south of Elbląg, 1200 feet descending, 2 persons on board.',
+   atc2:'{CS}, Gdańsk Information, roger MAYDAY, squawk 7700, emergency services alerted, QNH 1017.',
+   keys:[['MAYDAY ×3','mayday'],['Станция','information'],['Позывной','CS'],['Характер: engine failure','engine failure|engine'],['Намерение: forced landing','forced landing|landing'],['Позиция','south|elbląg|elblag|5 miles'],['Высота','1200'],['Persons on board','persons|pob']],
+   note:'Порядок ICAO: сигнал ×3, станция, позывной, характер, намерение, позиция/высота/курс, другая информация. Если времени нет — хоть позывной, характер и позицию.',
+   tips:['Сначала самолёт, потом радио: aviate — navigate — communicate.']},
+  {ctx:'FIS ответил на MAYDAY. Подтверди коротко и возвращайся к управлению.',
+   who:'atc', atc:'{CS}, Gdańsk Information, roger MAYDAY, squawk 7700, emergency services alerted, QNH 1017.',
+   pilot:'Squawk 7700, {CS}.',
+   keys:[['7700','7700'],['Позывной','CS']],
+   note:'Если руки заняты — можно не повторять ничего. 7700 выставляется и без указания, если успеваешь.',
+   tips:[]},
+  {ctx:'Отказ приёмника: ты никого не слышишь, но, возможно, тебя слышат. Ты над GOLF, 1500 ft, планируешь посадку на ВПП 29.',
+   who:'pilot', pilot:'Gdańsk Tower, {CS}, transmitting blind, radio failure, position GOLF, 1500 feet, will land runway 29, squawking 7600.',
+   atc2:'',
+   keys:[['Transmitting blind','transmitting blind|blind'],['Позывной','CS'],['Radio failure','radio failure|failure'],['Позиция GOLF','golf'],['Высота','1500'],['Намерение: ВПП 29','29'],['Squawk 7600','7600']],
+   note:'Отказ связи (SERA.14083–14087): 7600, передавать «blind» дважды, следовать по плану, смотреть световые сигналы с вышки (зелёный — посадка разрешена, красный — уходи). Сообщение передаётся дважды.',
+   tips:['Проверить: громкость, squelch, частота, гарнитура, второй COM.']},
+  {ctx:'Потеря ориентировки. Последняя уверенная позиция — мост через Вислу у Тчева 10 минут назад, курс 090, 1500 ft.',
+   who:'pilot', pilot:'Gdańsk Information, {CS}, uncertain of position, last known position Vistula bridge at Tczew 10 minutes ago, heading 090, 1500 feet, request assistance.',
+   atc2:'{CS}, roger, squawk 7000 and ident, say fuel endurance.',
+   keys:[['Станция','information'],['Позывной','CS'],['Uncertain of position','uncertain|position'],['Последняя позиция','tczew|bridge|vistula'],['Курс','090'],['Высота','1500'],['Request assistance','assistance|request']],
+   note:'Признаться в потере ориентировки — нормально и безопасно. FIS увидит тебя по squawk/ident и даст позицию. Не крутиться без доклада, не снижаться под кромку.',
+   tips:[]},
+  {ctx:'Ответ на запрос FIS.',
+   who:'atc', atc:'{CS}, roger, squawk 7000 and ident, say fuel endurance.',
+   pilot:'Squawk 7000, ident, endurance 2 hours 30 minutes, {CS}.',
+   keys:[['Squawk 7000','7000'],['Ident','ident'],['Endurance','endurance|hours'],['Позывной','CS']],
+   note:'Endurance — остаток времени полёта по топливу, не литры.',
+   tips:[]},
+  {ctx:'FIS предупреждает: ты идёшь в MCTR Pruszcz Gdański без разрешения.',
+   who:'atc', atc:'{CS}, you are approaching MCTR Pruszcz Gdański without clearance, suggest turn right heading 090 immediately.',
+   pilot:'Right heading 090, {CS}.',
+   keys:[['Right heading 090','090'],['Позывной','CS']],
+   note:'FIS формально не управляет, поэтому «suggest». Но спорить в эфире не надо: разворот, потом разбор. Нарушение зоны — самое частое ЛП в GA.',
+   tips:[]},
+  {ctx:'На короткой прямой Tower даёт уход на второй круг.',
+   who:'atc', atc:'{CS}, go around, I say again, go around, acknowledge.',
+   pilot:'Going around, {CS}.',
+   keys:[['Going around','going around|go around'],['Позывной','CS']],
+   note:'Ответ короткий, в форме действия. Сначала газ и набор, потом эфир.',
+   tips:[]}
+ ]
+}
+];
+
+window.MODULES=MODULES;
+/* ===================== СОСТОЯНИЕ ===================== */
+const LS='vfr-radio-v1';
+let state={cs:'SP-KAB',rate:0.95,voice:'',progress:{}};
+try{Object.assign(state,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
+function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+
+/* ===================== УТИЛИТЫ РЕЧИ ===================== */
+function csPhonetic(cs){return cs.replace(/-/g,'').toUpperCase().split('').map(c=>/[A-Z]/.test(c)?PH[c]:DIG[+c]||c).join(' ')}
+function fill(t){return (t||'').replace(/\{CS\}/g,state.cs)}
+function numWords(n){ // altitude: 1500 -> one tousand five hundred
+  n=+n; if(n>=1000){const th=Math.floor(n/1000),h=Math.floor((n%1000)/100);let s=DIG[th]+' thousand';if(h)s+=' '+DIG[h]+' hundred';return s}
+  if(n>=100&&n%100===0)return DIG[n/100]+' hundred';
+  return String(n).split('').map(d=>DIG[+d]).join(' ');
+}
+function spoken(t){
+  let s=fill(t);
+  s=s.replace(new RegExp(state.cs.replace(/[-]/g,'\\-'),'gi'),csPhonetic(state.cs));
+  s=s.replace(/\b(\d{3})\.(\d{1,3})\b/g,(m,a,b)=>a.split('').map(d=>DIG[+d]).join(' ')+' decimal '+b.split('').map(d=>DIG[+d]).join(' '));
+  s=s.replace(/\b(\d{3,4}) feet\b/g,(m,a)=>numWords(a)+' feet');
+  s=s.replace(/\b(\d+) (miles|minutes|kilometres|knots|persons|hours)\b/g,(m,a,u)=>(+a<10?DIG[+a]:a.split('').map(d=>DIG[+d]).join(' '))+' '+u);
+  s=s.replace(/\b(\d{1,2}) o'clock/g,(m,a)=>(+a<=12?['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'][+a]:a)+" o'clock");
+  s=s.replace(/\b(\d+)\b/g,(m,a)=>a.split('').map(d=>DIG[+d]).join(' '));
+  s=s.replace(/\bAlfa (\w)\b/g,'Alfa $1');
+  s=s.replace(/Gdańsk/g,'Gdansk').replace(/Elbląg/g,'Elblong').replace(/CTR/g,'C T R').replace(/TMA/g,'T M A').replace(/MCTR/g,'M C T R').replace(/QNH/g,'Q N H').replace(/VFR/g,'V F R').replace(/ATIS/g,'A T I S').replace(/MAYDAY/g,'Mayday').replace(/PAN PAN/g,'pan pan');
+  return s;
+}
+let voices=[];
+function loadVoices(){voices=(speechSynthesis.getVoices()||[]).filter(v=>/^en/i.test(v.lang))}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+let curAudio=null;const noAudio={};
+function speak(text,onend,file){
+  if(curAudio){curAudio.pause();curAudio=null}
+  if(file&&!noAudio[file]){ // готовый mp3 из папки audio/, если есть
+    try{
+      const a=new Audio('audio/'+file+'.mp3');a.playbackRate=Math.max(0.6,Math.min(1.3,state.rate/0.95));
+      a.onended=()=>onend&&onend();a.onerror=()=>{noAudio[file]=1;speakTTS(text,onend)};
+      curAudio=a;a.play().catch(()=>{noAudio[file]=1;speakTTS(text,onend)});return;
+    }catch(e){}
+  }
+  speakTTS(text,onend);
+}
+function speakTTS(text,onend){
+  if(!('speechSynthesis' in window)){toast('Озвучка недоступна в этом браузере');return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(spoken(text));
+  u.lang='en-GB';u.rate=state.rate;
+  const v=voices.find(v=>v.name===state.voice)||voices.find(v=>/en-GB/i.test(v.lang))||voices[0];
+  if(v)u.voice=v;
+  u.onend=()=>onend&&onend();u.onerror=()=>onend&&onend();
+  speechSynthesis.speak(u);
+}
+
+/* ===================== ПРОВЕРКА ОТВЕТА ===================== */
+const W2D={zero:'0',oh:'0',one:'1',two:'2',three:'3',tree:'3',four:'4',fower:'4',five:'5',fife:'5',six:'6',seven:'7',eight:'8',nine:'9',niner:'9'};
+function norm(t){
+  let s=(t||'').toLowerCase().replace(/[,.;:!?]+(\s|$)/g,' ').replace(/\s+/g,' ').trim();
+  s=s.replace(/\bdecimal\b|\bpoint\b/g,'.');
+  s=s.split(' ').map(w=>W2D[w]!==undefined?W2D[w]:w).join(' ');
+  s=s.replace(/\b(\d) thousand(?: (\d) hundred)?\b/g,(m,a,b)=>String(+a*1000+(b?+b*100:0)));
+  s=s.replace(/\b(\d) hundred\b/g,(m,a)=>String(+a*100));
+  // collapse single digits / dots separated by spaces: "2 9" -> "29", "1 1 8 . 1 0 5" -> "118.105"
+  s=s.replace(/\b(?:\d|\.)(?: (?:\d|\.))+\b/g,m=>m.replace(/ /g,''));
+  s=s.replace(/\s*\.\s*/g,'.').replace(/\bsp ?- ?/g,'sp-');
+  return ' '+s+' ';
+}
+function csRegex(){
+  const raw=state.cs.toLowerCase(); const nodash=raw.replace(/-/g,'');
+  const ph=csPhonetic(state.cs).toLowerCase(); const last3=ph.split(' ').slice(-3).join(' ');
+  const alt=[raw,nodash,raw.replace('-',' '),ph,last3,ph.replace(/x-ray/g,'xray'),ph.replace(/alfa/g,'alpha'),ph.replace(/juliett/g,'juliet')];
+  return new RegExp(alt.map(a=>a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'i');
+}
+function keyRegex(k){
+  if(k==='CS')return csRegex();
+  return new RegExp(k.replace(/\./g,'\\.').replace(/\bsay again\b/,'say again').replace(/alpha/g,'alpha'),'i');
+}
+function check(answer,keys){
+  const n=norm(answer);
+  return keys.map(([label,re])=>({label,hit:keyRegex(re).test(n)}));
+}
+
+/* ===================== РЕНДЕР ===================== */
+const $=s=>document.querySelector(s);
+const main=$('#main'),title=$('#title'),back=$('#back');
+let view={name:'home'};
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function hlModel(text,keys){ // подсветка ключевых элементов в эталоне
+  let s=esc(fill(text));
+  s=s.replace(new RegExp(state.cs.replace(/-/g,'\\-'),'g'),'<span class="hl">'+state.cs+'</span>');
+  keys.forEach(([l,re])=>{if(re==='CS')return;re.split('|').forEach(a=>{if(a.length<2||/[\\^$]/.test(a))return;try{s=s.replace(new RegExp('(?<!<span class="hl">)\\b('+a.replace(/\./g,'\\.')+')\\b(?![^<]*</span>)','i'),'<span class="hl">$1</span>')}catch(e){}})});
+  return s;
+}
+function modProgress(m){const p=state.progress[m.id]||{};const done=Object.keys(p).length;return {done,total:m.steps.length,pct:Math.round(100*done/m.steps.length)}}
+
+function renderHome(){
+  view={name:'home'};title.textContent='VFR Radio English';back.style.visibility='hidden';
+  const total=MODULES.reduce((a,m)=>a+m.steps.length,0),done=MODULES.reduce((a,m)=>a+modProgress(m).done,0);
+  main.innerHTML=`
+  <div class="card ctx"><h3>Курс</h3>
+   <div>Радиообмен на английском на всех этапах VFR-полёта. Один экран — одна реплика: <b>послушал → ответил → сверил</b>. Эфир на английском, разборы на русском. Позывной: <b>${esc(state.cs)}</b> (меняется в ⚙︎).</div>
+   <div class="bar"><i style="width:${Math.round(100*done/total)}%"></i></div>
+   <div class="small muted" style="margin-top:6px">${done} из ${total} реплик пройдено</div>
+  </div>
+  ${MODULES.map((m,i)=>{const p=modProgress(m);return `<button class="card module" data-m="${m.id}">
+    <div class="num">${i+1}</div><div class="t"><b>${m.title}</b><span>${m.sub}</span>
+    <div class="bar"><i style="width:${p.pct}%"></i></div></div><div class="muted">›</div></button>`}).join('')}
+  <div class="card small muted">Учебное пособие. Частоты, точки и процедуры взяты из открытых публикаций AIP Польши на дату создания и приведены для тренировки — перед полётом сверяй по действующему AIP/NOTAM. Позывной SP-KAB вымышленный. Фразеология — по Part-SERA (раздел 14) и ICAO Doc 9432.</div>`;
+  main.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>renderModule(b.dataset.m));
+}
+
+function renderModule(id){
+  const m=MODULES.find(x=>x.id===id);view={name:'module',id};title.textContent=m.title;back.style.visibility='visible';
+  const p=state.progress[id]||{};
+  main.innerHTML=`<div class="card ctx"><h3>О модуле</h3><div>${m.intro}</div></div>
+  ${m.steps.map((s,i)=>{const r=p[i];return `<button class="card module" data-s="${i}">
+   <div class="num" style="${r?'color:var(--ok)':''}">${r?'✓':i+1}</div>
+   <div class="t"><b style="font-size:15px">${esc(s.ctx.split(/[.!?](?=\s|$)/)[0])}.</b><span>${s.who==='pilot'?'Ты вызываешь первым':'Ответ на передачу диспетчера'}${r?` · ${r.score}%`:''}</span></div><div class="muted">›</div></button>`}).join('')}
+  <button class="btn big primary" id="startall">${Object.keys(p).length?'Продолжить':'Начать'} модуль</button>`;
+  main.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>renderStep(id,+b.dataset.s));
+  $('#startall').onclick=()=>{let i=0;while(p[i]!==undefined&&i<m.steps.length-1)i++;renderStep(id,i)};
+}
+
+let rec=null;
+function renderStep(id,i){
+  const m=MODULES.find(x=>x.id===id),s=m.steps[i];view={name:'step',id,i};
+  title.textContent=`${m.title} · ${i+1}/${m.steps.length}`;back.style.visibility='visible';
+  if(curAudio){curAudio.pause();curAudio=null}window.speechSynthesis&&speechSynthesis.cancel();
+  const atcFirst=s.who==='atc';
+  main.innerHTML=`
+  <div class="steps">${m.steps.map((_,k)=>`<i class="${(state.progress[id]||{})[k]?'done':''} ${k===i?'cur':''}"></i>`).join('')}</div>
+  <div class="card ctx"><h3>Ситуация</h3><div>${esc(s.ctx)}</div></div>
+  ${atcFirst?`<div class="bubble atc"><div class="who">📻 Диспетчер / станция <button class="btn ghost small" id="showatc">показать текст</button></div>
+     <div class="txt hidden" id="atctxt">${esc(fill(s.atc))}</div>
+     <div class="row" style="margin-top:10px"><button class="btn primary" id="play">▶︎ Слушать</button><button class="btn" id="playslow">🐢 Медленно</button></div></div>`:''}
+  <div class="bubble pilot"><div class="who">🎙 Твой ответ</div>
+    <div class="row"><button class="btn" id="mic">🎤 Сказать</button><span class="small muted">или введи текстом (можно голосовым набором клавиатуры)</span></div>
+    <textarea id="ans" placeholder="Напечатай, что скажешь в эфир…"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn primary" id="checkbtn">Проверить</button><button class="btn" id="reveal">Показать эталон</button></div>
+    <div id="result"></div>
+  </div>
+  <div id="model" style="display:none">
+    <div class="bubble pilot"><div class="who">✅ Эталон <button class="btn ghost small" id="playmodel">▶︎ озвучить</button></div><div class="txt" id="modeltxt">${hlModel(s.pilot,s.keys)}</div></div>
+    ${s.atc2?`<div class="bubble atc"><div class="who">📻 Ответ станции <button class="btn ghost small" id="playatc2">▶︎ озвучить</button></div><div class="txt">${esc(fill(s.atc2))}</div></div>`:''}
+    <div class="card"><div class="note">${s.note||'—'}</div>
+     ${s.tips&&s.tips.length?`<details><summary>Типичные ошибки</summary><ul>${s.tips.map(t=>`<li>${t}</li>`).join('')}</ul></details>`:''}
+     <details><summary>Чеклист самопроверки</summary><div class="small muted">Отметь, что ты реально произнёс:</div><div class="keys" id="selfkeys">${s.keys.map((k,ki)=>`<button class="key" data-k="${ki}"><span class="box"></span><span class="k">${k[0]}</span></button>`).join('')}</div>
+     <div class="row" style="margin-top:8px"><button class="btn ok" id="selfsave">Записать результат</button></div></details>
+    </div>
+  </div>
+  <div class="foot"><button class="btn" id="prev" ${i===0?'disabled':''}>‹ Назад</button><button class="btn primary" id="next">${i===m.steps.length-1?'Завершить':'Дальше ›'}</button></div>`;
+
+  const ans=$('#ans');
+  if(atcFirst){
+    $('#play').onclick=()=>speak(s.atc,null,`${id}-${i}-atc`);
+    $('#playslow').onclick=()=>{const r=state.rate;state.rate=0.72;speak(s.atc,()=>state.rate=r,`${id}-${i}-atc`);};
+    $('#showatc').onclick=()=>{$('#atctxt').classList.toggle('hidden')};
+    setTimeout(()=>speak(s.atc,null,`${id}-${i}-atc`),300);
+  }
+  $('#reveal').onclick=()=>{$('#model').style.display='block';$('#model').scrollIntoView({behavior:'smooth'})};
+  $('#playmodel').onclick=()=>speak(s.pilot,null,`${id}-${i}-pilot`);
+  if($('#playatc2'))$('#playatc2').onclick=()=>speak(s.atc2,null,`${id}-${i}-atc2`);
+  $('#checkbtn').onclick=()=>{
+    const r=check(ans.value,s.keys),hit=r.filter(x=>x.hit).length,score=Math.round(100*hit/r.length);
+    $('#result').innerHTML=`<div class="row" style="margin-top:10px;align-items:baseline"><span class="score" style="color:${score>=80?'var(--ok)':score>=50?'var(--accent2)':'var(--bad)'}">${score}%</span><span class="muted small">${hit} из ${r.length} ключевых элементов</span></div>
+      <div class="keys">${r.map(x=>`<div class="key ${x.hit?'hit':'miss'}"><span class="box">${x.hit?'✓':'✕'}</span><span class="k">${x.label}</span></div>`).join('')}</div>`;
+    $('#model').style.display='block';
+    saveResult(id,i,score);
+    if(s.atc2&&score>=50)setTimeout(()=>speak(s.atc2,null,`${id}-${i}-atc2`),400);
+  };
+  $('#mic').onclick=()=>startRec(ans);
+  main.querySelectorAll('#selfkeys .key').forEach(b=>b.onclick=()=>b.classList.toggle('hit'));
+  $('#selfsave').onclick=()=>{const all=main.querySelectorAll('#selfkeys .key'),hit=[...all].filter(b=>b.classList.contains('hit')).length;const score=Math.round(100*hit/all.length);saveResult(id,i,score);toast(`Записано: ${score}%`)};
+  $('#prev').onclick=()=>renderStep(id,i-1);
+  $('#next').onclick=()=>{if(i===m.steps.length-1){renderModule(id)}else renderStep(id,i+1)};
+  window.scrollTo(0,0);
+}
+function saveResult(id,i,score){state.progress[id]=state.progress[id]||{};const prev=state.progress[id][i];state.progress[id][i]={score:prev?Math.max(prev.score,score):score};save()}
+
+function startRec(ta){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Распознавание речи недоступно здесь — используй голосовой набор клавиатуры');ta.focus();return}
+  try{
+    rec=new SR();rec.lang='en-GB';rec.interimResults=false;rec.maxAlternatives=1;
+    const btn=$('#mic');btn.classList.add('pulse');btn.textContent='🎤 Слушаю…';
+    rec.onresult=e=>{ta.value=e.results[0][0].transcript};
+    rec.onerror=e=>{toast('Микрофон недоступен в этом окне (' +e.error+ '). Введи текстом или через голосовую клавиатуру.');ta.focus()};
+    rec.onend=()=>{btn.classList.remove('pulse');btn.textContent='🎤 Сказать'};
+    rec.start();
+  }catch(e){toast('Микрофон недоступен — введи текстом');ta.focus()}
+}
+
+function renderRef(){
+  view={name:'ref'};title.textContent='Шпаргалка';back.style.visibility='visible';
+  main.innerHTML=`<div class="card ref">
+  <h4>Алфавит ICAO</h4><div class="grid">${Object.entries(PH).map(([k,v])=>`<div><b>${k}</b> ${v}</div>`).join('')}</div>
+  <h4>Цифры</h4><div class="grid">${DIG.map((d,i)=>`<div><b>${i}</b> ${i===3?'tree':i===5?'fife':i===4?'fower':d}</div>`).join('')}<div><b>.</b> decimal</div><div><b>1000</b> tousand</div><div><b>100</b> hundred</div></div>
+  <div class="small muted" style="margin-top:6px">По цифрам: частоты, QNH, squawk, ВПП, курс, ветер, время. Целиком: высоты (two tousand five hundred), видимость, облачность (whole numbers).</div>
+  <h4>Стандартные слова (SERA.14055 / Doc 9432)</h4>
+  <ul><li><b>AFFIRM</b> — да · <b>NEGATIVE</b> — нет · <b>ROGER</b> — принял (не согласие!) · <b>WILCO</b> — понял, выполню</li>
+  <li><b>SAY AGAIN</b> — повтори · <b>STANDBY</b> — жди · <b>UNABLE</b> — не могу · <b>CORRECTION</b> — исправляю себя</li>
+  <li><b>CONFIRM</b> — подтверди · <b>READ BACK</b> — повтори мне · <b>MONITOR</b> — слушай частоту · <b>CONTACT</b> — вызови</li>
+  <li><b>APPROVED</b> — для руления/запуска · <b>CLEARED</b> — только взлёт/посадка/маршрут · <b>GO AHEAD / PASS YOUR MESSAGE</b> — говори</li></ul>
+  <h4>Обязательный readback (SERA.14035)</h4>
+  <ul><li>маршрутные разрешения ATC (в т.ч. вход/выход CTR, TMA)</li><li>вход на ВПП, посадка, взлёт, hold short, пересечение, руление и backtrack по любой ВПП</li><li>ВПП в работе, QNH, код SSR, новая частота, уровень, курс, скорость, transition level</li></ul>
+  <div class="small muted">Остальное — подтверждение позывным или «wilco». Позывной — в конце readback.</div>
+  <h4>Структура первого вызова</h4>
+  <ul><li>Станция → позывной → тип ВС → откуда/куда → позиция → высота → QNH/ATIS → запрос</li></ul>
+  <h4>Бедствие и срочность</h4>
+  <ul><li><b>MAYDAY ×3</b> — бедствие · <b>PAN PAN ×3</b> — срочность</li><li>Станция → позывной → характер → намерение → позиция, высота, курс → POB</li><li>Коды: 7700 бедствие · 7600 отказ связи · 7500 захват · 7000 VFR</li><li>121.500 — аварийная частота</li></ul>
+  <h4>Район Гданьска (сверять по AIP)</h4>
+  <ul><li>EPGD: ATIS 129.630 · Delivery 131.325 · Ground 131.330 · Tower 118.105 · Approach 127.280 · Director 133.660 · ВПП 11/29</li>
+  <li>CTR Gdańsk класс D, GND–2000 ft AMSL; вход VFR не выше 1500 ft; точки GOLF, INDIA, MIKE, NOVEMBER, SIERRA, X-RAY, ZULU; ожидание над GOLF/NOVEMBER/SIERRA</li>
+  <li>FIS Gdańsk Information: восток 127.150 · запад 125.275</li>
+  <li>EPEL Elbląg Radio 122.305 · ВПП 10/28 грунт 700 м</li></ul>
+  </div>`;
+}
+function renderSettings(){
+  view={name:'set'};title.textContent='Настройки';back.style.visibility='visible';
+  main.innerHTML=`<div class="card set">
+   <label>Твой позывной (регистрация)</label><input type="text" id="cs" value="${esc(state.cs)}" maxlength="8" autocapitalize="characters">
+   <div class="small muted" style="margin-top:4px">В эфире прозвучит: <b id="csph">${csPhonetic(state.cs)}</b></div>
+   <label>Скорость речи диспетчера: <span id="ratev">${state.rate}</span></label><input type="range" id="rate" min="0.6" max="1.3" step="0.05" value="${state.rate}">
+   <label>Голос</label><select id="voice"><option value="">Авто (en-GB)</option>${voices.map(v=>`<option value="${esc(v.name)}" ${v.name===state.voice?'selected':''}>${esc(v.name)} (${v.lang})</option>`).join('')}</select>
+   <div class="row" style="margin-top:14px"><button class="btn primary" id="test">▶︎ Тест голоса</button><button class="btn" id="reset">Сбросить прогресс</button></div>
+   <div class="warn" style="margin-top:14px">Если список голосов пуст — на iPhone/Android голоса подгружаются после первого нажатия «Слушать». Английский голос улучшает реализм, но настоящий эфир всегда хуже: тренируй и на скорости 1.2.</div>
+  </div>`;
+  $('#cs').oninput=e=>{state.cs=e.target.value.toUpperCase().trim()||'SP-KAB';$('#csph').textContent=csPhonetic(state.cs);save()};
+  $('#rate').oninput=e=>{state.rate=+e.target.value;$('#ratev').textContent=state.rate;save()};
+  $('#voice').onchange=e=>{state.voice=e.target.value;save()};
+  $('#test').onclick=()=>speak('{CS}, Gdańsk Tower, runway 29, cleared for take-off, wind 280 degrees 8 knots.');
+  $('#reset').onclick=()=>{state.progress={};save();toast('Прогресс сброшен')};
+}
+
+back.onclick=()=>{if(view.name==='step')renderModule(view.id);else renderHome()};
+$('#refbtn').onclick=renderRef;$('#setbtn').onclick=renderSettings;
+renderHome();
+</script>
+</body>
+</html>
