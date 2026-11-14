@@ -443,9 +443,41 @@ const MODULES = [
 ];
 
 window.MODULES=MODULES;
+/* ===================== ДРИЛЛЫ (случайные readback) ===================== */
+const R=a=>a[Math.floor(Math.random()*a.length)];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function genDrill(n){
+  const stations=[['Gdańsk Tower','118.105'],['Gdańsk Ground','131.330'],['Gdańsk Approach','127.280'],['Gdańsk Information','127.150'],['Gdańsk Information','125.275'],['Elbląg Radio','122.305'],['Gdańsk Delivery','131.325'],['Gdańsk Director','133.660']];
+  const pts=['GOLF','MIKE','INDIA','NOVEMBER','SIERRA','X-RAY','ZULU'];
+  const steps=[];
+  for(let k=0;k<n;k++){
+    const qnh=rnd(985,1035),sq=String(rnd(2,7))+String(rnd(0,7))+String(rnd(0,7))+String(rnd(0,7)),rwy=R(['11','29','10','28']),hdg=String(rnd(1,36)*10).padStart(3,'0'),alt=R([1000,1500,2000,2500,3000,3500]),[stn,frq]=R(stations),pt=R(pts),hp=R(['Alfa 4','Alfa 6','Bravo 1','Alfa 1']),twy=R(['Bravo and Alfa','Alfa','Charlie and Bravo']),lr=R(['left','right']),cd=R(['climb','descend']);
+    const T=[
+      {atc:`{CS}, QNH ${qnh}.`,pilot:`QNH ${qnh}, {CS}.`,keys:[['QNH '+qnh,String(qnh)],['Позывной','CS']]},
+      {atc:`{CS}, squawk ${sq}.`,pilot:`Squawk ${sq}, {CS}.`,keys:[['Squawk '+sq,sq],['Позывной','CS']]},
+      {atc:`{CS}, contact ${stn} ${frq}.`,pilot:`${stn} ${frq}, {CS}.`,keys:[['Станция',stn.split(' ')[1].toLowerCase()],['Частота '+frq,frq],['Позывной','CS']]},
+      {atc:`{CS}, wind ${hdg} degrees ${rnd(3,15)} knots, runway ${rwy}, cleared to land.`,pilot:`Runway ${rwy}, cleared to land, {CS}.`,keys:[['ВПП '+rwy,rwy],['Cleared to land','cleared to land'],['Позывной','CS']]},
+      {atc:`{CS}, runway ${rwy}, cleared for take-off.`,pilot:`Runway ${rwy}, cleared for take-off, {CS}.`,keys:[['ВПП '+rwy,rwy],['Cleared for take-off','take-off|takeoff'],['Позывной','CS']]},
+      {atc:`{CS}, turn ${lr} heading ${hdg}, ${cd} to altitude ${alt} feet, QNH ${qnh}.`,pilot:`${lr[0].toUpperCase()+lr.slice(1)} heading ${hdg}, ${cd==='climb'?'climbing':'descending'} to altitude ${alt} feet, QNH ${qnh}, {CS}.`,keys:[['Направление '+lr,lr],['Курс '+hdg,hdg],['Высота '+alt,String(alt)],['QNH '+qnh,String(qnh)],['Позывной','CS']]},
+      {atc:`{CS}, taxi to holding point ${hp} runway ${rwy} via ${twy}, QNH ${qnh}.`,pilot:`Taxi to holding point ${hp} runway ${rwy} via ${twy}, QNH ${qnh}, {CS}.`,keys:[['Holding point '+hp,hp.toLowerCase().replace('alfa','alfa|alpha').split('|').length>1?hp.toLowerCase()+'|'+hp.toLowerCase().replace('alfa','alpha'):hp.toLowerCase()],['ВПП '+rwy,rwy],['Маршрут via '+twy,twy.split(' ')[0].toLowerCase()],['QNH '+qnh,String(qnh)],['Позывной','CS']]},
+      {atc:`{CS}, enter CTR via ${pt}, not above ${alt} feet, squawk ${sq}, QNH ${qnh}.`,pilot:`Enter CTR via ${pt}, not above ${alt} feet, squawk ${sq}, QNH ${qnh}, {CS}.`,keys:[['Точка '+pt,pt.toLowerCase().replace('x-ray','x-ray|xray')],['Not above '+alt,String(alt)],['Squawk '+sq,sq],['QNH '+qnh,String(qnh)],['Позывной','CS']]},
+      {atc:`{CS}, ${cd} to altitude ${alt} feet, QNH ${qnh}, squawk ${sq}, contact ${stn} ${frq}.`,pilot:`${cd==='climb'?'Climbing':'Descending'} to altitude ${alt} feet, QNH ${qnh}, squawk ${sq}, ${stn} ${frq}, {CS}.`,keys:[['Высота '+alt,String(alt)],['QNH '+qnh,String(qnh)],['Squawk '+sq,sq],['Частота '+frq,frq],['Позывной','CS']]},
+    ];
+    const t=R(T);
+    steps.push(Object.assign({ctx:'Дрилл: услышь один раз и повтори обязательные элементы. Текст скрыт — как в эфире.',who:'atc',note:'Порядок как у диспетчера, позывной в конце. Если не разобрал — лучше «say again …», чем угадывать.',tips:[],drill:true},t));
+  }
+  return {id:'drill',title:'Дриллы readback',sub:'Случайные QNH, squawk, частоты, курсы, высоты, руление — на скорость',intro:'',steps};
+}
+let DRILL=null,WEAK=null;
+function findModule(id){if(id==='drill')return DRILL;if(id==='weak')return WEAK;return MODULES.find(x=>x.id===id)}
+function buildWeak(){
+  const steps=[];
+  MODULES.forEach(m=>m.steps.forEach((s,i)=>{const r=(state.progress[m.id]||{})[i];if(r&&r.score<80)steps.push(Object.assign({},s,{src:{id:m.id,i},ctx:`[${m.title}] `+s.ctx}))}));
+  WEAK={id:'weak',title:'Слабые места',sub:'',intro:'',steps};return steps.length;
+}
 /* ===================== СОСТОЯНИЕ ===================== */
 const LS='vfr-radio-v1';
-let state={cs:'SP-KAB',rate:0.95,voice:'',progress:{}};
+let state={cs:'SP-KAB',rate:0.95,voice:'',progress:{},exam:false,drills:0};
 try{Object.assign(state,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
 function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
 
@@ -549,12 +581,20 @@ function renderHome(){
   ${MODULES.map((m,i)=>{const p=modProgress(m);return `<button class="card module" data-m="${m.id}">
     <div class="num">${i+1}</div><div class="t"><b>${m.title}</b><span>${m.sub}</span>
     <div class="bar"><i style="width:${p.pct}%"></i></div></div><div class="muted">›</div></button>`}).join('')}
+  <div class="card"><div class="row">
+    <button class="btn primary" id="drillbtn">⚡ Дрилл readback ×10</button>
+    <button class="btn" id="weakbtn">🔁 Слабые места</button>
+    <label class="btn ghost small"><input type="checkbox" id="exam" ${state.exam?'checked':''}> Без подсказок</label>
+   </div><div class="small muted" style="margin-top:8px">Дриллов пройдено: ${state.drills||0}. «Без подсказок» прячет текст диспетчера и эталон до проверки — режим, близкий к реальному эфиру.</div></div>
   <div class="card small muted">Учебное пособие. Частоты, точки и процедуры взяты из открытых публикаций AIP Польши на дату создания и приведены для тренировки — перед полётом сверяй по действующему AIP/NOTAM. Позывной SP-KAB вымышленный. Фразеология — по Part-SERA (раздел 14) и ICAO Doc 9432.</div>`;
   main.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>renderModule(b.dataset.m));
+  $('#drillbtn').onclick=()=>{DRILL=genDrill(10);renderStep('drill',0)};
+  $('#weakbtn').onclick=()=>{const n=buildWeak();if(!n){toast('Слабых мест нет (или ещё нечего повторять)');return}renderStep('weak',0)};
+  $('#exam').onchange=e=>{state.exam=e.target.checked;save()};
 }
 
 function renderModule(id){
-  const m=MODULES.find(x=>x.id===id);view={name:'module',id};title.textContent=m.title;back.style.visibility='visible';
+  const m=findModule(id);view={name:'module',id};title.textContent=m.title;back.style.visibility='visible';
   const p=state.progress[id]||{};
   main.innerHTML=`<div class="card ctx"><h3>О модуле</h3><div>${m.intro}</div></div>
   ${m.steps.map((s,i)=>{const r=p[i];return `<button class="card module" data-s="${i}">
@@ -567,20 +607,20 @@ function renderModule(id){
 
 let rec=null;
 function renderStep(id,i){
-  const m=MODULES.find(x=>x.id===id),s=m.steps[i];view={name:'step',id,i};
+  const m=findModule(id),s=m.steps[i];view={name:'step',id,i};
   title.textContent=`${m.title} · ${i+1}/${m.steps.length}`;back.style.visibility='visible';
   if(curAudio){curAudio.pause();curAudio=null}window.speechSynthesis&&speechSynthesis.cancel();
   const atcFirst=s.who==='atc';
   main.innerHTML=`
   <div class="steps">${m.steps.map((_,k)=>`<i class="${(state.progress[id]||{})[k]?'done':''} ${k===i?'cur':''}"></i>`).join('')}</div>
   <div class="card ctx"><h3>Ситуация</h3><div>${esc(s.ctx)}</div></div>
-  ${atcFirst?`<div class="bubble atc"><div class="who">📻 Диспетчер / станция <button class="btn ghost small" id="showatc">показать текст</button></div>
+  ${atcFirst?`<div class="bubble atc"><div class="who">📻 Диспетчер / станция ${state.exam||s.drill?'':'<button class="btn ghost small" id="showatc">показать текст</button>'}</div>
      <div class="txt hidden" id="atctxt">${esc(fill(s.atc))}</div>
      <div class="row" style="margin-top:10px"><button class="btn primary" id="play">▶︎ Слушать</button><button class="btn" id="playslow">🐢 Медленно</button></div></div>`:''}
   <div class="bubble pilot"><div class="who">🎙 Твой ответ</div>
     <div class="row"><button class="btn" id="mic">🎤 Сказать</button><span class="small muted">или введи текстом (можно голосовым набором клавиатуры)</span></div>
     <textarea id="ans" placeholder="Напечатай, что скажешь в эфир…"></textarea>
-    <div class="row" style="margin-top:8px"><button class="btn primary" id="checkbtn">Проверить</button><button class="btn" id="reveal">Показать эталон</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn primary" id="checkbtn">Проверить</button>${state.exam||s.drill?'':'<button class="btn" id="reveal">Показать эталон</button>'}</div>
     <div id="result"></div>
   </div>
   <div id="model" style="display:none">
@@ -598,17 +638,17 @@ function renderStep(id,i){
   if(atcFirst){
     $('#play').onclick=()=>speak(s.atc,null,`${id}-${i}-atc`);
     $('#playslow').onclick=()=>{const r=state.rate;state.rate=0.72;speak(s.atc,()=>state.rate=r,`${id}-${i}-atc`);};
-    $('#showatc').onclick=()=>{$('#atctxt').classList.toggle('hidden')};
+    if($('#showatc'))$('#showatc').onclick=()=>{$('#atctxt').classList.toggle('hidden')};
     setTimeout(()=>speak(s.atc,null,`${id}-${i}-atc`),300);
   }
-  $('#reveal').onclick=()=>{$('#model').style.display='block';$('#model').scrollIntoView({behavior:'smooth'})};
+  if($('#reveal'))$('#reveal').onclick=()=>{$('#model').style.display='block';$('#model').scrollIntoView({behavior:'smooth'})};
   $('#playmodel').onclick=()=>speak(s.pilot,null,`${id}-${i}-pilot`);
   if($('#playatc2'))$('#playatc2').onclick=()=>speak(s.atc2,null,`${id}-${i}-atc2`);
   $('#checkbtn').onclick=()=>{
     const r=check(ans.value,s.keys),hit=r.filter(x=>x.hit).length,score=Math.round(100*hit/r.length);
     $('#result').innerHTML=`<div class="row" style="margin-top:10px;align-items:baseline"><span class="score" style="color:${score>=80?'var(--ok)':score>=50?'var(--accent2)':'var(--bad)'}">${score}%</span><span class="muted small">${hit} из ${r.length} ключевых элементов</span></div>
       <div class="keys">${r.map(x=>`<div class="key ${x.hit?'hit':'miss'}"><span class="box">${x.hit?'✓':'✕'}</span><span class="k">${x.label}</span></div>`).join('')}</div>`;
-    $('#model').style.display='block';
+    $('#model').style.display='block';$('#atctxt')&&$('#atctxt').classList.remove('hidden');
     saveResult(id,i,score);
     if(s.atc2&&score>=50)setTimeout(()=>speak(s.atc2,null,`${id}-${i}-atc2`),400);
   };
@@ -616,10 +656,10 @@ function renderStep(id,i){
   main.querySelectorAll('#selfkeys .key').forEach(b=>b.onclick=()=>b.classList.toggle('hit'));
   $('#selfsave').onclick=()=>{const all=main.querySelectorAll('#selfkeys .key'),hit=[...all].filter(b=>b.classList.contains('hit')).length;const score=Math.round(100*hit/all.length);saveResult(id,i,score);toast(`Записано: ${score}%`)};
   $('#prev').onclick=()=>renderStep(id,i-1);
-  $('#next').onclick=()=>{if(i===m.steps.length-1){renderModule(id)}else renderStep(id,i+1)};
+  $('#next').onclick=()=>{if(i===m.steps.length-1){id==='drill'||id==='weak'?renderHome():renderModule(id)}else renderStep(id,i+1)};
   window.scrollTo(0,0);
 }
-function saveResult(id,i,score){state.progress[id]=state.progress[id]||{};const prev=state.progress[id][i];state.progress[id][i]={score:prev?Math.max(prev.score,score):score};save()}
+function saveResult(id,i,score){const st=findModule(id).steps[i];if(st.drill){state.drills=(state.drills||0)+1;save();return}if(st.src){id=st.src.id;i=st.src.i}state.progress[id]=state.progress[id]||{};const prev=state.progress[id][i];state.progress[id][i]={score:prev?Math.max(prev.score,score):score};save()}
 
 function startRec(ta){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -676,7 +716,7 @@ function renderSettings(){
   $('#reset').onclick=()=>{state.progress={};save();toast('Прогресс сброшен')};
 }
 
-back.onclick=()=>{if(view.name==='step')renderModule(view.id);else renderHome()};
+back.onclick=()=>{if(view.name==='step'&&view.id!=='drill'&&view.id!=='weak')renderModule(view.id);else renderHome()};
 $('#refbtn').onclick=renderRef;$('#setbtn').onclick=renderSettings;
 renderHome();
 </script>
